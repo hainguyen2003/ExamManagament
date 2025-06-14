@@ -1,0 +1,73 @@
+✅ 1. Tạo dự án Vue 3 (Vite)
+bash
+Sao chép
+Chỉnh sửa
+npm create vite@latest vue-exam-client --template vue
+Chọn:
+
+Vue (chứ không phải vanilla)
+
+Chọn JavaScript hoặc TypeScript tuỳ ý
+
+✅ 2. Cài đặt vào thư mục và cài dependencies
+bash
+Sao chép
+Chỉnh sửa
+cd vue-exam-client
+npm install
+✅ 3. Cài thêm thư viện hỗ trợ
+bash
+Sao chép
+Chỉnh sửa
+npm install axios
+npm install vue-router@4
+npm install pinia
+Tuỳ chọn UI Framework (nếu cần):
+
+bash
+Sao chép
+Chỉnh sửa
+npm install element-plus
+hoặc:
+
+bash
+Sao chép
+Chỉnh sửa
+npm install bootstrap
+✅ 4. Khởi chạy server Vue
+bash
+Sao chép
+Chỉnh sửa
+npm run dev
+📁 Cấu trúc gợi ý
+css
+Sao chép
+Chỉnh sửa
+src/
+├── assets/
+├── components/
+├── views/
+├── router/
+│   └── index.js
+├── services/
+│   └── api.js
+├── App.vue
+└── main.js
+🔧 Tạo file cấu hình axios
+src/services/api.js
+
+js
+Sao chép
+Chỉnh sửa
+import axios from 'axios'
+
+const instance = axios.create({
+  baseURL: 'http://localhost:8080', // Backend Spring Boot
+  headers: {
+    'Content-Type': 'application/json'
+  }
+})
+
+export default instance
+npm install vue-router
+npm install vue-toastification@2.0.0-rc.5
