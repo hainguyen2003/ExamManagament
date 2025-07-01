@@ -1,333 +1,553 @@
 <template>
   <div class="exam-manager">
-    <!-- TẠO KỲ THI -->
-    <div class="card form-card">
-      <h2 class="form-title"> Tạo kỳ thi mới</h2>
-
-      <div class="form-table">
-        <div class="form-row">
-          <label for="name">Tên kỳ thi:</label>
-          <input id="name" v-model="name" placeholder="Nhập tên kỳ thi" />
-        </div>
-
-        <div class="form-row">
-          <label for="description">Mô tả:</label>
-          <input id="description" v-model="description" placeholder="Mô tả kỳ thi" />
-        </div>
-
-        <div class="form-row">
-          <label for="start">Bắt đầu:</label>
-          <input id="start" type="datetime-local" v-model="startTime" />
-        </div>
-
-        <div class="form-row">
-          <label for="end">Kết thúc:</label>
-          <input id="end" type="datetime-local" v-model="endTime" />
-        </div>
-
-        <div class="form-submit">
-          <button class="primary-btn" @click="createExam"> Tạo kỳ thi</button>
-        </div>
-      </div>
+    <div class="view-switch">
+      <button :class="['switch-btn', view === 'create' ? 'active' : '']" @click="view = 'create'">Tạo mới</button>
+      <button :class="['switch-btn', view === 'update' ? 'active' : '']" @click="switchToUpdate">Cập nhật</button>
     </div>
 
-    <div class="card upload-card" v-if="createdExam">
-      <h3 class="upload-title">
-         Cập nhật bộ đề cho: <strong>{{ createdExam.name }}</strong> (ID: {{ createdExam.id }})
-      </h3>
-
-      <div class="upload-group">
-        <label class="upload-label">Chọn file Excel (1 / nhiều):</label>
-        <input type="file" multiple @change="handleFileChange" class="upload-input" />
-
-        <div class="file-preview" v-if="files.length">
-          <ul>
-            <li v-for="(file, index) in files" :key="index" class="file-item">
-              📄 {{ file.name }}
-            </li>
-          </ul>
+    <!-- TẠO Môn THI -->
+    <div v-if="view === 'create'">
+      <section class="form-section blue-bg">
+        <h2 class="form-title">Tạo môn thi mới</h2>
+        <div class="form-row">
+          <label>Tên môn thi:</label>
+          <input v-model="form.name" placeholder="Nhập tên môn thi" />
         </div>
+        <div class="form-row">
+          <label>Mô tả:</label>
+          <input v-model="form.description" placeholder="Mô tả môn thi" />
+        </div>
+        <div class="form-row">
+          <label>Bắt đầu:</label>
+          <input type="datetime-local" v-model="form.startTime" />
+        </div>
+        <div class="form-row">
+          <label>Kết thúc:</label>
+          <input type="datetime-local" v-model="form.endTime" />
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-primary" @click="submitExam">{{ editExam ? 'Cập nhật' : 'Tạo mới' }}</button>
+          <button v-if="editExam" class="btn btn-secondary" @click="cancelEdit">Hủy</button>
+        </div>
+      </section>
 
-        <button class="upload-btn" @click="uploadFiles"> Update</button>
-      </div>
+      <section class="list-section">
+        <h3>Danh sách môn thi</h3>
+        <table class="table">
+          <thead>
+            <tr><th>ID</th><th>Tên</th><th>Bắt đầu</th><th>Kết thúc</th><th>Hành động</th></tr>
+          </thead>
+          <tbody>
+            <tr v-for="exam in exams" :key="exam.id">
+              <td>{{ exam.id }}</td>
+              <td>{{ exam.name }}</td>
+              <td>{{ formatDate(exam.startTime) }}</td>
+              <td>{{ formatDate(exam.endTime) }}</td>
+              <td>
+                <button class="btn-edit" @click.stop="startEdit(exam)">✏️</button>
+                <button class="btn-delete" @click.stop="deleteExam(exam.id)">🗑️</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
     </div>
 
-    <div class="list-card">
-      <h3> Danh sách kỳ thi</h3>
-      <table class="exam-table">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Tên</th>
-            <th>Bắt đầu</th>
-            <th>Kết thúc</th>
-            <th>Hành động</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="exam in exams" :key="exam.id">
-            <td>{{ exam.id }}</td>
-            <td>{{ exam.name }}</td>
-            <td>{{ exam.startTime?.replace('T', ' ') }}</td>
-            <td>{{ exam.endTime?.replace('T', ' ') }}</td>
-            <td>
-              <button class="delete-btn" @click="deleteExam(exam.id)">🗑️ Xoá</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+    <!-- CẬP NHẬT ĐỀ & ĐÁP ÁN -->
+    <div v-if="view === 'update'">
+      <section class="form-section purple-bg">
+        <h2 class="form-title">Cập nhật đề & đáp án</h2>
+        <div class="form-row">
+          <label>Chọn môn thi:</label>
+          <select v-model="selectedExamId">
+            <option value="">-- chọn môn thi --</option>
+            <option v-for="exam in exams" :key="exam.id" :value="exam.id">{{ exam.name }}</option>
+          </select>
+        </div>
+
+        <div v-if="selectedExamId">
+          <div class="form-row vertical-upload">
+            <div class="form-row">
+              <label>File đề thi (Excel):</label>
+              <input type="file" multiple @change="onFileChange" class="file-input"/>
+            </div>
+            <div class="form-row" style="justify-content: flex-end">
+              <button class="btn btn-success" @click="uploadFiles">Upload</button>
+            </div>
+          </div>
+
+          <section class="question-sets">
+            <h3 class="question-set-title">Các bộ đề trong môn thi:</h3>
+            <ul v-if="questionSets.length > 0">
+              <li v-for="set in questionSets" :key="set.id" class="set-row">
+                <div class="set-info">
+                  <input type="checkbox" :checked="set.enabled" @change="toggleEnabled(set)" />
+                  <span class="set-title">{{ stripExtension(set.name) }}</span>
+                  <span v-if="set.lastUsedAt" class="set-used-at">Đã sử dụng: {{ formatFullDate(set.lastUsedAt) }}</span>
+                </div>
+                <div class="set-actions">
+                  <button class="btn-delete" @click="deleteSet(set.id)">🗑️ Xoá</button>
+                  <button class="btn btn-primary" @click="togglePreview(set)">
+                    {{ isPreviewing(set.id) ? 'Ẩn' : 'Xem' }}
+                  </button>
+                </div>
+              </li>
+            </ul>
+            <p v-else style="text-align: center; color: #999;">Không có bộ đề nào trong môn thi này.</p>
+          </section>
+
+          <!-- ✅ Hiển thị nội dung đề -->
+          <!-- <div v-if="previewContent.length > 0 && previewSetId" class="preview-box"> -->
+            <div v-if="Array.isArray(previewContent) && previewContent.length > 0 && previewSetId" class="preview-box">
+            <h4 style="margin-bottom: 16px; display: flex; justify-content: center;">
+              Nội dung đề: {{ previewTitle }}
+            </h4>
+            <table class="table">
+              <thead>
+                <tr>
+                  <th style="width: 60px;">STT</th>
+                  <th>Nội dung câu hỏi</th>
+                  <th style="min-width: 240px;">Các đáp án</th>
+                  <th style="width: 80px; text-align: center;">Điểm</th> 
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(q, index) in previewContent" :key="index">
+                  <td style="text-align: center;">{{ index + 1 }}</td>
+                  <td>{{ q.content }}</td>
+                  <td>
+                    <div v-for="(a, i) in q.answers || []" :key="i" class="answer-block">
+                      <!-- <span :style="{ fontWeight: a.correct ? 'bold' : 'normal' }"> -->
+                        <span>
+                        {{ String.fromCharCode(65 + i) }}. {{ a.content }}
+                      </span>
+                    </div>
+                  </td>
+                  <td style="text-align: center;">{{ (q.score ?? 0).toFixed(2) }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import axios from '../services/api';
-import { useToast } from 'vue-toastification';
+import { ref, onMounted, watch, nextTick } from 'vue'
+import axios from '../services/api'
+import { useToast } from 'vue-toastification'
 
-const toast = useToast();
+const toast = useToast()
+const view = ref('create')
+const form = ref({ name: '', description: '', startTime: '', endTime: '' })
+const exams = ref([])
+const editExam = ref(null)
+const selectedExamId = ref(null)
+const questionSets = ref([])
+const files = ref([])
+const previewContent = ref([])
+const previewTitle = ref("")
+const previewSetId = ref(null)
 
-const name = ref('');
-const description = ref('');
-const startTime = ref('');
-const endTime = ref('');
-const files = ref([]);
-const createdExam = ref(null);
-const exams = ref([]);
+onMounted(loadExams)
 
-onMounted(fetchExams);
+watch(selectedExamId, async (newId) => {
+  if (newId !== null && newId !== "") {
+    await loadQuestionSets()
+  } else {
+    questionSets.value = []
+  }
+})
 
-async function fetchExams() {
+function switchToUpdate() {
+  view.value = 'update'
+  nextTick(() => {
+    if (selectedExamId.value) loadQuestionSets()
+  })
+}
+
+async function loadExams() {
   try {
-    const res = await axios.get('/exams');
-    exams.value = res.data;
+    const res = await axios.get('/exams')
+    exams.value = res.data?.items || []
   } catch (err) {
-    toast.error('❌ Không thể tải danh sách kỳ thi.');
+    toast.error("❌ Lỗi tải danh sách kỳ thi: " + err.message)
   }
 }
 
-async function createExam() {
+async function loadQuestionSets() {
   try {
-    const response = await axios.post('/exams', {
-      name: name.value,
-      description: description.value,
-      startTime: startTime.value,
-      endTime: endTime.value,
-      questionCount: 0
-    });
-    createdExam.value = response.data;
-    exams.value.push(response.data);
-    toast.success(`✅ Đã tạo kỳ thi: ${createdExam.value.name}`);
+    const res = await axios.get(`/question-sets/exam/${selectedExamId.value}`)
+    questionSets.value = Array.isArray(res) ? res : res.data || []
   } catch (err) {
-    toast.error('❌ Lỗi khi tạo kỳ thi: ' + err.message);
+    questionSets.value = []
+    toast.error('❌ Lỗi tải bộ đề: ' + err.message)
   }
 }
 
-function handleFileChange(e) {
-  files.value = Array.from(e.target.files);
+function onFileChange(e) {
+  files.value = Array.from(e.target.files)
 }
 
 async function uploadFiles() {
-  if (!createdExam.value?.id || files.value.length === 0) {
-    toast.warning('⚠️ Chưa chọn file hoặc chưa có kỳ thi.');
-    return;
+  if (!selectedExamId.value || files.value.length === 0) {
+    toast.warning('⚠️ Chưa chọn kỳ thi hoặc file.')
+    return
   }
-
-  const formData = new FormData();
-  files.value.forEach((file) => formData.append('files', file));
-
+  const formData = new FormData()
+  files.value.forEach(file => formData.append('files', file))
   try {
-    const res = await axios.post(
-      `/questions/import/upload-multi/${createdExam.value.id}`,
-      formData,
-      { headers: { 'Content-Type': 'multipart/form-data' } }
-    );
-    toast.success(` Kết quả update:\n${res.data}`);
+    const res = await axios.post(`/questions/import/upload-multi/${selectedExamId.value}`, formData)
+    toast.success('✅ Đã upload: ' + res.data)
+    await loadQuestionSets()
   } catch (err) {
-    toast.error('❌ Upload thất bại: ' + err.message);
+    toast.error('❌ Upload thất bại: ' + err.message)
   }
 }
 
-async function deleteExam(id) {
-  if (!confirm('Bạn có chắc muốn xoá kỳ thi này?')) return;
+function stripExtension(name) {
+  return name.replace(/\.[^/.]+$/, '')
+}
+
+function formatDate(dt) {
+  if (!dt) return ''
+  return dt.split('.')[0].replace('T', ' ')
+}
+
+function formatFullDate(dt) {
+  if (!dt) return ''
+  const d = new Date(dt)
+  const pad = (n) => n.toString().padStart(2, '0')
+  return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`
+}
+
+function isPreviewing(id) {
+  return previewSetId.value === id
+}
+
+async function togglePreview(set) {
+  if (previewSetId.value === set.id) {
+    previewSetId.value = null
+    previewContent.value = []
+  } else {
+    try {
+      const res = await axios.get(`/question-sets/${set.id}/export-json`)
+      // console.log(" DATA TỪ API /export-json:", res)
+
+      if (!Array.isArray(res)) {
+        toast.error("❌ Dữ liệu không hợp lệ.")
+        return
+      }
+
+      previewContent.value = res
+      previewTitle.value = stripExtension(set.name)
+      previewSetId.value = set.id
+    } catch (err) {
+      toast.error("❌ Lỗi tải nội dung đề: " + err.message)
+    }
+  }
+}
+
+
+async function toggleEnabled(set) {
+  const newValue = !set.enabled
   try {
-    await axios.delete(`/exams/${id}`);
-    exams.value = exams.value.filter(e => e.id !== id);
-    toast.success(`🗑️ Đã xoá kỳ thi ID: ${id}`);
+    await axios.put(`/question-sets/${set.id}/enable`, null, { params: { enabled: newValue } })
+    set.enabled = newValue
+    toast.success("✅ Đã cập nhật trạng thái đề thi.")
   } catch (err) {
-    toast.error('❌ Không thể xoá kỳ thi: ' + err.message);
+    toast.error("❌ Lỗi cập nhật trạng thái: " + err.message)
+  }
+}
+
+async function deleteSet(id) {
+  if (!confirm("Xoá bộ đề này?")) return
+  await axios.delete(`/question-sets/${id}`)
+  await loadQuestionSets()
+  toast.success("🗑️ Đã xoá bộ đề.")
+}
+
+async function deleteExam(id) {
+  if (!confirm("Xoá kỳ thi này?")) return
+  await axios.delete(`/exams/${id}`)
+  exams.value = exams.value.filter((e) => e.id !== id)
+  toast.success("🗑️ Đã xoá.")
+}
+
+function cancelEdit() {
+  editExam.value = null
+  form.value = { name: '', description: '', startTime: '', endTime: '' }
+}
+
+async function submitExam() {
+  try {
+    const data = { ...form.value }
+    const res = editExam.value
+      ? await axios.put(`/exams/${editExam.value.id}`, data)
+      : await axios.post('/exams', { ...data, questionCount: 0 })
+
+    if (editExam.value) {
+      const idx = exams.value.findIndex((e) => e.id === editExam.value.id)
+      exams.value[idx] = res.data
+      toast.success('✅ Cập nhật thành công')
+    } else {
+      exams.value.push(res.data)
+      toast.success('✅ Tạo thành công')
+    }
+    cancelEdit()
+  } catch (err) {
+    toast.error('❌ Lỗi: ' + err.message)
   }
 }
 </script>
 
+
 <style scoped>
+
 .exam-manager {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 32px 16px;
+  width: 100%;
+  max-width: 1300px;
+  margin: 40px auto;
+  padding: 24px;
   font-family: 'Segoe UI', sans-serif;
+  background: #f4f6fa;
+  border-radius: 6px;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.04);
+   max-height: calc(100vh - 100px); 
+  overflow-y: auto;     
 }
 
-/* Tạo kỳ thi */
-.form-card {
-  margin-top: 20px;
-  background: #d0f3f7;
-  border-radius: 6.8px;
+.view-switch {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 4px;
+  gap: 5px;
+}
+
+.switch-btn {
+  background: #f1f1f1;
+  padding: 7px 12px;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.switch-btn:hover {
+  background-color: #e0e0e0;
+}
+
+.switch-btn.active {
+  background-color: #1976d2;
+  color: #fff;
+  border-color: #1976d2;
+}
+
+.form-section,
+.list-section,
+.question-sets {
+  background: #ffffff;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  margin-bottom: 24px;
+}
+
+.blue-bg {
+  background-color: #e3f6ff;
+}
+
+.purple-bg {
+  background-color: #ece8f9;
 }
 
 .form-title {
-  text-align: center;
-  margin-bottom: 24px;
   font-size: 24px;
   font-weight: bold;
-  color: #f25b5b;
-}
-
-.form-table {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  margin-top: 16px;
+  color: #333;
+  margin-bottom: 24px;
+  text-align: center;
 }
 
 .form-row {
   display: flex;
   align-items: center;
   gap: 16px;
+  width: 84%;
+  margin-bottom: 21px;
 }
 
 .form-row label {
   width: 160px;
+  text-align: right;
   font-weight: 600;
-  color: #333;
-}
-
-.form-row input {
-  flex: 1;
-  padding: 10px;
-  font-size: 15px;
-  border: 1px solid #fbf6f6;
-  border-radius: 6px;
-}
-
-.form-submit {
-  display: flex;
-  justify-content: center;
-  margin-top: 24px;
-}
-
-.primary-btn {
-  background-color: #1976d2;
-  color: white;
-  padding: 12px 28px;
-  font-size: 16px;
-  font-weight: bold;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.primary-btn:hover {
-  background-color: #145ea8;
-}
-
-/* Upload đề */
-.upload-card {
-  background: #f4f8e7;
-  padding: 24px;
-  border-radius: 12px;
-  margin-bottom: 32px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-}
-
-.upload-title {
-  text-align: center;
-  font-size: 20px;
-  font-weight: 600;
-  color: #0d3c61;
-  margin-bottom: 20px;
-}
-
-.upload-group {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 14px;
-}
-
-.upload-label {
-  font-weight: 500;
-  color: #333;
-}
-
-.upload-input {
-  padding: 6px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  font-size: 14px;
-}
-
-.file-preview ul {
-  list-style: none;
-  padding: 0;
-  margin: 8px 0;
-}
-
-.file-item {
-  font-size: 15px;
-  margin-bottom: 4px;
   color: #444;
 }
 
-.upload-btn {
-  margin-top: 12px;
-  padding: 12px 28px;
-  font-size: 16px;
+.form-row input,
+.form-row select {
+  flex: 1;
+  padding: 11px 14px;
+  border-radius: 6px;
+  font-size: 15px;
+  border: 1px solid #ccc;
+  background: #fff;
+}
+
+.form-actions {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.btn {
+  padding: 10px 16px;
   font-weight: bold;
-  background-color: #0cba23;
-  color: white;
-  border: none;
-  border-radius: 8px;
+  border-radius: 6px;
   cursor: pointer;
-  transition: background 0.3s;
+  border: none;
 }
 
-.upload-btn:hover {
-  background-color: #62d70e;
+.btn-primary {
+  background-color: #caf582;
+  color: rgb(0, 0, 0);
+  margin-left: 8px;
+  padding: 6px 12px;
 }
 
-/* Danh sách kỳ thi */
-.list-card {
-  margin-top: 25px;
-  background: #deecb8;
-  border-radius: 6.8px;
+.btn-secondary {
+  background-color: #d0dd17;
+  color: rgb(18, 15, 15);
 }
 
-.exam-table {
-  width: 100%;
-  margin-top: 12px;
-  border-collapse: collapse;
+.btn-success {
+  background-color: #2e7d32;
+  color: white;
+  margin-left: 10px;
 }
 
-.exam-table th,
-.exam-table td {
-  padding: 10px;
-  border-bottom: 1px solid #ddd;
-  text-align: left;
+.btn-edit {
+  background-color: #0288d1;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 6px;
+  margin-right: 6px;
 }
 
-.delete-btn {
+.btn-delete {
   background-color: #e53935;
   color: white;
   padding: 6px 12px;
-  border: none;
   border-radius: 6px;
-  font-size: 14px;
-  cursor: pointer;
 }
 
-.delete-btn:hover {
-  background-color: #c62828;
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
 }
+
+.table th,
+.table td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.table th {
+  background: #f0f0f0;
+  font-weight: 600;
+}
+
+.question-sets ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.question-sets li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: #f1f6ff;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
+.question-set-title {
+  font-size: 18px;
+  font-weight: bold;
+  color: #0d3c61;
+  margin-bottom: 12px;
+}
+.set-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: #f1f6ff;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
+.set-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.set-name {
+  display: flex;
+  flex-direction: column;
+}
+
+.set-title {
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.set-used-at {
+  font-size: 12px;
+  color: #666;
+}
+.set-used-badge {
+  font-size: 12px;
+  color: #e91e63;
+  font-weight: 600;
+  margin-left: 8px;
+}
+.set-name-horizontal {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.set-used-badge {
+  font-size: 13px;
+  color: #e91e63;
+  font-weight: 500;
+}
+
+.set-used-at {
+  font-size: 13px;
+  color: #666;
+}
+.preview-box {
+  background: #fff;
+  border: 1px solid #ccc;
+  padding: 24px;
+  border-radius: 12px;
+  margin-top: 20px;
+  max-height: 400px;
+  overflow: auto;
+}
+
 </style>

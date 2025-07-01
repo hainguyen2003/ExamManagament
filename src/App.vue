@@ -1,11 +1,11 @@
 <template>
   <div class="layout-wrapper">
     <aside class="sidebar">
-      <div class="logo"> EXAM</div>
+      <div class="logo">EXAM</div>
       <nav class="sidebar-nav">
-        <router-link to="/exam-manager" class="nav-item">Tạo kỳ thi</router-link>
-        <router-link to="/question-manager" class="nav-item">Cập nhật đề & đáp án</router-link>
-        <!-- <router-link to="/result-manager" class="nav-item">Thống kê kết quả</router-link> -->
+        <router-link to="/exam-manager" class="nav-item">Tạo môn thi</router-link>
+        <!-- <router-link to="/question-manager" class="nav-item">Cập nhật đề & đáp án</router-link> -->
+        <router-link to="/result-manager" class="nav-item">Thống kê kết quả</router-link>
       </nav>
     </aside>
 
@@ -13,7 +13,13 @@
       <header class="top-navbar">
         <div class="top-title">Trang cập nhật đề trắc nghiệm</div>
         <div class="top-actions">
-          <span>.</span>
+          <template v-if="user">
+            <span class="user-info"> {{ user.fullName }}</span>
+            <button class="logout-btn" @click="logout">Đăng xuất</button>
+          </template>
+          <template v-else>
+            <router-link to="/login" class="login-btn">Đăng nhập</router-link>
+          </template>
         </div>
       </header>
 
@@ -24,12 +30,30 @@
   </div>
 </template>
 
+<script setup>
+import { computed } from 'vue';
+import { useAuthStore } from '@/stores/auth';
+import { useRouter } from 'vue-router';
+
+const authStore = useAuthStore();
+const router = useRouter();
+
+const user = computed(() => authStore.user);
+
+const logout = () => {
+  if (confirm("Bạn có chắc chắn muốn đăng xuất không?")) {
+    authStore.logout();
+    router.push('/login');
+  }
+};
+</script>
+
 <style scoped>
-html, body,
+html,
+body,
 #app {
   height: 100%;
-  width: 100%;
-
+  width: 98%;
 }
 
 .layout-wrapper {
@@ -43,7 +67,7 @@ html, body,
 }
 
 .sidebar {
-  width: 240px;
+  width: 19%;
   background: #2c3e50;
   color: #b2f4bb;
   padding: 18px;
@@ -54,9 +78,9 @@ html, body,
 }
 
 .logo {
-  font-size: 22px;
+  font-size: 36px;
   font-weight: bold;
-  margin-bottom: 32px;
+  margin: 32px 12px 32px 12px;
   text-align: center;
 }
 
@@ -70,6 +94,7 @@ html, body,
   color: #bfe8f3;
   text-decoration: none;
   font-weight: 500;
+  font-size: 22px;
   padding: 10px 16px;
   border-radius: 8px;
   transition: background 0.3s;
@@ -99,16 +124,46 @@ html, body,
 }
 
 .top-title {
-  font-size: 20px;
+  font-size: 25px;
   font-weight: 600;
   color: #34495e;
 }
 
+.top-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.user-info {
+  font-size: 16px;
+  font-weight: 500;
+  color: #1f2937;
+}
+
+.login-btn,
+.logout-btn {
+  font-size: 15px;
+  padding: 8px 16px;
+  border-radius: 6px;
+  color: #ffffff;
+  background-color: #3b82f6;
+  border: none;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.login-btn:hover,
+.logout-btn:hover {
+  background-color: #2563eb;
+}
+
 .main-content {
-  padding: 28px;
+  padding: 25px;
   flex: 1;
   background: #fcfbfb;
   overflow-y: auto;
   height: 100%;
+  width: 100%;
 }
 </style>
