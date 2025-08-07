@@ -67,6 +67,8 @@ const instance = axios.create({
     'Content-Type': 'application/json'
   }
 })
+npm install xlsx
+
 
 export default instance
 npm install vue-router

@@ -6,7 +6,7 @@ const api = axios.create({
   timeout: 10000,
 });
 
-// ✅ Gắn token vào mỗi request nếu có
+// Gắn token vào mỗi request nếu có
 api.interceptors.request.use(
   (config) => {
     const auth = useAuthStore(); // pinia store

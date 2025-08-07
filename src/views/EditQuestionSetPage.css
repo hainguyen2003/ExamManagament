@@ -1,0 +1,198 @@
+.edit-set-page {
+  max-width: 94%;
+  margin: 34px auto;
+  padding: 0px 20px 12px 12px;
+  background: #f9f9fc;
+  border-radius: 8px;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.title {
+  font-size: 24px;
+  margin-bottom: 20px;
+  font-weight: bold;
+  color: #2b3e5c;
+  text-align: center;
+}
+
+.edit-section {
+  margin-bottom: 30px;
+}
+
+.inline-form-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.inline-form-row label {
+  min-width: 160px;
+  font-size: 15px;
+  font-weight: 500;
+  margin: 0;
+  line-height: 40px;
+}
+
+/* Duration input */
+.duration-input {
+  width: 140px;
+  height: 40px;
+  font-size: 15px;
+  padding: 0 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  line-height: 40px;
+}
+
+/* Textareas and score input */
+.question-input,
+.answer-input,
+.score-input {
+  width: 100%;
+  padding: 6px;
+  margin-top: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+/* Table styles */
+.table-wrapper {
+  max-height: 500px;
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  margin-top: 12px;
+  background: #fff;
+}
+
+/* Table layout */
+.editable-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  font-size: 14px;
+}
+
+.editable-table th,
+.editable-table td {
+  border: 1px solid #ddd;
+  padding: 8px 10px;
+  vertical-align: top;
+  box-sizing: border-box;
+}
+
+/* Header */
+.editable-table th {
+  background: #f0f0f0;
+  text-align: center;
+  font-weight: 600;
+  color: #2b3e5c;
+  font-size: 15px;
+}
+
+/* STT và điểm */
+.editable-table td:nth-child(1),
+.editable-table td:last-child {
+  text-align: center;
+  vertical-align: middle;
+  width: 60px;
+}
+
+/* Ô nội dung câu hỏi */
+.question-input {
+  width: 100%;
+  min-height: 70px;
+  padding: 8px 10px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  resize: vertical;
+  box-sizing: border-box;
+  margin-top: 0;          
+  background-color: white;
+}
+
+
+/* Phần đáp án */
+.answer-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.answer-input {
+  flex: 1;
+  padding: 6px 8px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.answer-row label {
+  white-space: nowrap;
+  font-size: 13.5px;
+  color: #333;
+}
+
+/* Input điểm */
+.score-input {
+  width: 60px;
+  padding: 6px 8px;
+  text-align: center;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+/* ==== BUTTONS ==== */
+.btn-save,
+.btn-back {
+  height: 40px;
+  font-size: 15px;
+  line-height: 40px;
+  padding: 0 18px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  transition: background 0.3s;
+}
+
+/* Save button */
+.btn-save {
+  background-color: #66FF66;
+  color: black;
+  margin: 0px 150px 0px 50px;
+}
+
+.btn-save:hover {
+  background-color: #00CC33;
+}
+
+/* Back button */
+.btn-back {
+  background-color: #2196f3;
+  color: white;
+  margin: 0px 50px 0px 50px;
+}
+
+.btn-back:hover {
+  background-color: #1976d2;
+}
+
+/* Nút cuối trang */
+.action-buttons {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 16px;
+  margin: 20px 20px 0 auto;
+  padding-bottom: 12px;
+}

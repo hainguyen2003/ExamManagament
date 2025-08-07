@@ -3,9 +3,10 @@
     <aside class="sidebar">
       <div class="logo">EXAM</div>
       <nav class="sidebar-nav">
-        <router-link to="/exam-manager" class="nav-item">Tạo môn thi</router-link>
-        <!-- <router-link to="/question-manager" class="nav-item">Cập nhật đề & đáp án</router-link> -->
-        <router-link to="/result-manager" class="nav-item">Thống kê kết quả</router-link>
+        <router-link to="/exam-manager" class="nav-item">Qlý môn & đề thi</router-link>
+       <router-link to="/question" class="nav-item"> Thêm câu hỏi</router-link>
+        <router-link to="/generated" class="nav-item"> Tạo đề thi</router-link>
+        <router-link to="/result-manager" class="nav-item">Thống kê file kết quả</router-link>
       </nav>
     </aside>
 

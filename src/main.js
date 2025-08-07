@@ -17,5 +17,12 @@ app.use(pinia);
 useAuthStore().restore();
 
 app.use(router);
-app.use(Toast);
+app.use(Toast, {
+  timeout: 2000,            
+  closeOnClick: true,
+  pauseOnHover: false,
+  draggable: true,
+  hideProgressBar: false,
+});
+
 app.mount("#app");

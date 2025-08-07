@@ -14,6 +14,9 @@ import PopupNewPassword from "./pages/forgot-password/PopupNewPassword.vue";
 import ExamManager from "./views/ExamManager.vue";
 import QuestionManager from "./views/QuestionManager.vue";
 import ResultManager from "./views/ResultManager.vue";
+import EditQuestionSetPage from "./views/EditQuestionSetPage.vue";
+import GeneratedExam from "./views/GeneratedExam.vue";
+import QuestionBank from "./views/QuestionBank.vue";
 
 const routes = [
   // { path: "/", redirect: "/login" },
@@ -29,9 +32,7 @@ const routes = [
   {
     path: "/exam-manager",
     component: MainLayout,
-    children: [
-      { path: "", component: ExamManager }, // ✅ Hiển thị trong <router-view />
-    ],
+    children: [{ path: "", component: ExamManager }],
   },
   {
     path: "/result-manager",
@@ -42,6 +43,22 @@ const routes = [
     path: "/question-manager",
     component: MainLayout,
     children: [{ path: "", component: QuestionManager }],
+  },
+  {
+    path: "/edit-question-set/:id",
+    component: MainLayout,
+    children: [{ path: "", component: EditQuestionSetPage }],
+  },
+
+  {
+    path: "/generated",
+    component: MainLayout,
+    children: [{ path: "", component: GeneratedExam }],
+  },
+  {
+    path: "/question",
+    component: MainLayout,
+    children: [{ path: "", component: QuestionBank }],
   },
 
   // fallback

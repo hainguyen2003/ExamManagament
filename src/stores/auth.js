@@ -21,7 +21,7 @@ export const useAuthStore = defineStore("auth", {
         JSON.stringify({ token: userData.token, user: userData })
       );
 
-      return userData; // ✅ CẦN THIẾT để Login.vue nhận dữ liệu
+      return userData; //  CẦN THIẾT để Login.vue nhận dữ liệu
     },
 
     restore() {

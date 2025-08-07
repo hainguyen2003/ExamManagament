@@ -1,0 +1,239 @@
+.exam-manager {
+  width: 100%;
+  max-width: 1300px;
+  margin: 40px auto;
+  padding: 24px;
+  font-family: 'Segoe UI', sans-serif;
+  background: #f4f6fa;
+  border-radius: 6px;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.04);
+  max-height: calc(100vh - 100px); 
+  overflow-y: auto;     
+}
+
+.view-switch {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 4px;
+  gap: 5px;
+}
+
+.switch-btn {
+  background: #f1f1f1;
+  padding: 7px 12px;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+.switch-btn:hover {
+  background-color: #e0e0e0;
+}
+.switch-btn.active {
+  background-color: #1976d2;
+  color: #fff;
+  border-color: #1976d2;
+}
+
+.form-section,
+.list-section,
+.question-sets {
+  background: #ffffff;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  margin: 12px 13px 24px 16px;
+}
+
+.blue-bg {
+  background-color: #e3f6ff;
+}
+.purple-bg {
+  background-color: #ece8f9;
+}
+
+.form-title {
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.form-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 66%;
+  margin-bottom: 21px;
+}
+.form-row label {
+  width: 160px;
+  text-align: right;
+  font-weight: 600;
+  color: #444;
+}
+.form-row input,
+.form-row select {
+  flex: 1;
+  padding: 11px 14px;
+  border-radius: 6px;
+  font-size: 15px;
+  border: 1px solid #ccc;
+  background: #fff;
+}
+
+.form-actions {
+  text-align: center;
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  gap: 70px; 
+}
+
+
+.btn {
+  padding: 10px 16px;
+  font-weight: bold;
+  border-radius: 6px;
+  cursor: pointer;
+  border: none;
+}
+.btn-primary {
+  background-color: #caf582;
+  color: rgb(0, 0, 0);
+  /* margin-left: 8px; */
+  padding: 6px 12px;
+}
+.btn-secondary {
+  background-color: #FF3300;
+  color: rgb(18, 15, 15);
+}
+.btn-success {
+  background-color: #2e7d32;
+  color: white;
+  margin-left: 10px;
+}
+.btn-edit {
+  background-color: #0288d1;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 6px;
+  margin-right: 6px;
+}
+.btn-delete {
+  background-color: #e53935;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 6px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+}
+.table th,
+.table td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: left;
+  vertical-align: top;
+}
+.table th {
+  background: #f0f0f0;
+  font-weight: 600;
+}
+
+/* ----------- BỘ ĐỀ ----------- */
+.question-sets ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.question-set-title {
+  font-size: 18px;
+  font-weight: bold;
+  color: #0d3c61;
+  margin-bottom: 12px;
+}
+.set-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 12px 16px;
+  background: #eef4ff;
+  border-radius: 10px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+.set-info {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  gap: 12px;
+  min-width: 250px;
+}
+.set-title {
+  font-weight: bold;
+  font-size: 16px;
+}
+.set-used-at {
+  font-size: 13px;
+  color: #666;
+}
+.set-used-badge {
+  font-size: 13px;
+  color: #e91e63;
+  font-weight: 500;
+}
+.set-duration-row {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+.set-duration-row input[type="number"] {
+  width: 60px;
+  text-align: center;
+  padding: 6px 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  margin-right:20px;
+}
+
+.set-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.preview-box {
+  background: #fff;
+  border: 1px solid #ccc;
+  padding: 24px;
+  border-radius: 12px;
+  margin-top: 20px;
+  max-height: 400px;
+  overflow: auto;
+}
+
+.editable-input {
+  width: 100%;
+  padding: 6px 8px;
+  margin-bottom: 4px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}
+.answer-block {
+  margin-bottom: 6px;
+}
